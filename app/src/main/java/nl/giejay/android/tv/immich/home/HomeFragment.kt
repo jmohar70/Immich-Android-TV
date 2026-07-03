@@ -45,23 +45,17 @@ class HomeFragment : BrowseSupportFragment() {
         setupUi()
         loadData()
 
+        // Must be set before onCreateView() runs, since that's where Leanback decides
+        // which row's fragment to create initially (BrowseSupportFragment.createMainFragment).
+        // Setting it later (e.g. in onViewCreated) is too late - it would already have
+        // tried (and failed) to create a fragment for the BrandingRow at position 0.
+        selectedPosition = 1
+
         mainFragmentRegistry.registerFragment(PageRow::class.java, PageRowFragmentFactory())
-        // Safety net: BrandingRow should never actually become the "current page" (it's
-        // unfocusable and we always keep selectedPosition past it), but if some Leanback
-        // internal state transition ever does select it anyway, show a blank fragment
-        // instead of crashing with "no fragment factory registered for this row type".
-        mainFragmentRegistry.registerFragment(BrandingRow::class.java, object : FragmentFactory<Fragment>() {
-            override fun createFragment(rowObj: Any): Fragment = Fragment()
-        })
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        // Must happen after the view hierarchy (and headers fragment) exists, otherwise
-        // this silently has no effect and the fixed branding row at position 0 can end up
-        // being treated as the initially selected/active page.
-        selectedPosition = 1
 
         headersSupportFragment.setOnHeaderViewSelectedListener { _, row ->
             title = row?.headerItem?.name ?: "-"
