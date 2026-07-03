@@ -17,6 +17,9 @@ class ImmichRowPresenter : Presenter() {
             .inflate(R.layout.presenter_row, parent, false)
 
         val viewHolder = ImmichRowViewHolder(root)
+        viewHolder.tvTitle.setOnFocusChangeListener { _, hasFocus ->
+            viewHolder.focusIndicator.visibility = if (hasFocus) View.VISIBLE else View.INVISIBLE
+        }
         return viewHolder
     }
 
@@ -24,6 +27,7 @@ class ImmichRowPresenter : Presenter() {
         val headerItem = if (item == null) null else (item as Row).headerItem
         val vh = viewHolder as ImmichRowViewHolder
         vh.tvTitle.text = headerItem?.name
+        vh.focusIndicator.visibility = if (vh.tvTitle.isFocused) View.VISIBLE else View.INVISIBLE
 
         if (editMode) {
             if (headerItem?.name == viewHolder.view.context.getString(R.string.edit)) {
@@ -44,6 +48,7 @@ class ImmichRowPresenter : Presenter() {
     override fun onUnbindViewHolder(viewHolder: ViewHolder) {
         val vh = viewHolder as ImmichRowViewHolder
         vh.tvTitle.text = null
+        vh.focusIndicator.visibility = View.INVISIBLE
     }
 
 }

@@ -53,7 +53,6 @@ class HomeFragment : BrowseSupportFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         headersSupportFragment.setOnHeaderViewSelectedListener { _, row ->
-            title = row?.headerItem?.name ?: "-"
             selectedPosition = row?.let { mRowsAdapter.indexOf(it) } ?: 0
         }
 
@@ -84,7 +83,7 @@ class HomeFragment : BrowseSupportFragment() {
         headersState = HEADERS_ENABLED
         isHeadersTransitionOnBackEnabled = true
         brandColor = resources.getColor(android.R.color.black)
-        title = getString(R.string.albums)
+        title = ""
 //        setOnSearchClickedListener {
 //            Toast.makeText(
 //                activity, "Search!", Toast.LENGTH_SHORT

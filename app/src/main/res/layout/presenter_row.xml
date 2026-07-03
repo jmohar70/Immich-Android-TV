@@ -3,6 +3,13 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <View
+        android:id="@+id/focus_indicator"
+        android:layout_width="4dp"
+        android:layout_height="match_parent"
+        android:layout_marginEnd="8dp"
+        android:background="#FFD600"
+        android:visibility="invisible" />
     <ImageView
         android:layout_width="22dp"
         android:id="@+id/row_visible"
