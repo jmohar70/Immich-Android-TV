@@ -1,6 +1,5 @@
 package nl.giejay.android.tv.immich
 
-import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.view.KeyEvent
@@ -9,10 +8,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph
 import androidx.navigation.fragment.NavHostFragment
-import nl.giejay.android.tv.immich.shared.prefs.APP_LANGUAGE
 import nl.giejay.android.tv.immich.shared.prefs.MetaDataScreen
 import nl.giejay.android.tv.immich.shared.prefs.PreferenceManager
-import nl.giejay.android.tv.immich.shared.util.LocaleHelper
 import nl.giejay.android.tv.immich.shared.viewmodel.KeyEventsViewModel
 import nl.giejay.mediaslider.adapter.AlignOption
 import timber.log.Timber
@@ -26,27 +23,12 @@ class MainActivity : FragmentActivity() {
     private lateinit var navGraph: NavGraph
     private lateinit var navController: NavController
 
-    override fun attachBaseContext(newBase: Context) {
-        super.attachBaseContext(LocaleHelper.wrap(newBase))
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         Timber.i("Booting main activity")
 
         setContentView(R.layout.activity_main)
-
-        // Skip the value we get immediately upon subscribing (the current one) and only
-        // recreate when the user actually picks a different language afterwards.
-        var isInitialLanguageValue = true
-        PreferenceManager.subscribe(APP_LANGUAGE) {
-            if (isInitialLanguageValue) {
-                isInitialLanguageValue = false
-            } else {
-                recreate()
-            }
-        }
 
         keyEventsModel = ViewModelProvider(this)[KeyEventsViewModel::class.java]
 

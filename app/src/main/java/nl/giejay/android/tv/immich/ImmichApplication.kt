@@ -26,7 +26,6 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import nl.giejay.android.tv.immich.shared.prefs.DEBUG_MODE
 import nl.giejay.android.tv.immich.shared.prefs.PreferenceManager
 import nl.giejay.android.tv.immich.shared.prefs.USER_ID
-import nl.giejay.android.tv.immich.shared.util.LocaleHelper
 import timber.log.Timber
 import java.util.UUID
 
@@ -35,10 +34,6 @@ import java.util.UUID
  * Initializes libraries, such as Timber, and sets up application wide settings.
  */
 class ImmichApplication : Application() {
-
-    override fun attachBaseContext(base: Context) {
-        super.attachBaseContext(LocaleHelper.wrap(base))
-    }
 
     override fun onCreate() {
         super.onCreate()

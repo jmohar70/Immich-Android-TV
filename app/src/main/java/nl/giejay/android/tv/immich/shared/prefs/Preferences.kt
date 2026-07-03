@@ -283,18 +283,6 @@ data object ALL_ASSETS_SORTING : EnumByTitlePref<PhotosOrder>(PhotosOrder.NEWEST
     }
 }
 
-data object APP_LANGUAGE : EnumByTitlePref<AppLanguage>(AppLanguage.SYSTEM,
-    ImmichApplication.appContext!!.getString(R.string.app_language),
-    ImmichApplication.appContext!!.getString(R.string.app_language_desc)) {
-    override fun fromPrefValue(prefValue: String): AppLanguage {
-        return AppLanguage.valueOfSafe(prefValue, defaultValue)
-    }
-
-    override fun getEnumEntries(): Array<AppLanguage> {
-        return AppLanguage.entries.toTypedArray()
-    }
-}
-
 // other
 data object DEBUG_MODE : BooleanPref(false, ImmichApplication.appContext!!.getString(R.string.enable_debug_mode), ImmichApplication.appContext!!.getString(R.string.enable_debug_mode_desc))
 data object LOAD_BACKGROUND_IMAGE : BooleanPref(true, ImmichApplication.appContext!!.getString(R.string.load_selected_item_as_background), ImmichApplication.appContext!!.getString(R.string.load_selected_item_as_background_desc))
@@ -357,7 +345,6 @@ data object ViewPrefScreen : PrefScreen(ImmichApplication.appContext!!.getString
             SLIDER_MAX_CUT_OFF_WIDTH,
             SLIDER_MAX_CUT_OFF_HEIGHT)),
         PrefCategory(ImmichApplication.appContext!!.getString(R.string.other), listOf(
-            APP_LANGUAGE,
             SIMILAR_ASSETS_YEARS_BACK,
             SIMILAR_ASSETS_PERIOD_DAYS,
             RECENT_ASSETS_MONTHS_BACK,

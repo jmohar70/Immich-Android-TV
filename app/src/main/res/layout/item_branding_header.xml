@@ -25,9 +25,10 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
         android:gravity="center"
-        android:textSize="11sp"
+        android:textSize="10sp"
         android:textColor="#99FFFFFF"
-        android:maxLines="2"
-        android:ellipsize="middle" />
+        android:maxLines="3"
+        android:breakStrategy="balanced"
+        android:ellipsize="end" />
 
 </LinearLayout>

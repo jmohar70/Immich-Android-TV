@@ -150,7 +150,7 @@ class ApiClient(private val config: ApiClientConfig) {
         val response = executeAPICall(200) {
             service.getBucketV2(albumId = safeAlbumId, timeBucket = bucket, order = if (order == PhotosOrder.OLDEST_NEWEST) "asc" else "desc")
         }.map {
-            it.id.pmap { t -> service.getAsset(t).body() }.filterNotNull().toList()
+            it.id.pmap(concurrency = 8) { t -> service.getAsset(t).body() }.filterNotNull().toList()
         }
         if (response.isLeft()) {
             return executeAPICall(200) {

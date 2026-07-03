@@ -169,11 +169,6 @@
     <string name="load_selected_item_as_background_desc">Load the currently selected image/album as the background</string>
     <string name="user_id">User ID</string>
     <string name="user_id_desc">Your user id, needed for debugging</string>
-    <string name="app_language">Language</string>
-    <string name="app_language_desc">Language used in the app menus (requires restart, independent of the device\'s system language)</string>
-    <string name="language_system">System default</string>
-    <string name="language_english">English</string>
-    <string name="language_german">Deutsch</string>
     <string name="seasonal_photos_years_back">Seasonal photos years back</string>
     <string name="seasonal_photos_years_back_desc">How many years to go back when selecting seasonal photos</string>
     <string name="seasonal_photos_period_days">Seasonal photos period in days</string>

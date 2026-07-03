@@ -21,6 +21,8 @@ import android.view.ViewGroup
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import java.io.IOException
 import java.io.InputStream
 import kotlin.math.roundToInt
@@ -30,8 +32,13 @@ import kotlin.math.roundToInt
  */
 object Utils {
 
-    fun <A, B>List<A>.pmap(f: suspend (A) -> B): List<B> = runBlocking {
-        map { async(Dispatchers.Default) { f(it) } }.map { it.await() }
+    fun <A, B>List<A>.pmap(concurrency: Int = Int.MAX_VALUE, f: suspend (A) -> B): List<B> = runBlocking {
+        val semaphore = Semaphore(concurrency)
+        map {
+            async(Dispatchers.Default) {
+                semaphore.withPermit { f(it) }
+            }
+        }.map { it.await() }
     }
 
     fun View.getAllChildren(): List<View> {
