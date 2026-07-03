@@ -286,7 +286,11 @@ data object ALL_ASSETS_SORTING : EnumByTitlePref<PhotosOrder>(PhotosOrder.NEWEST
 // other
 data object DEBUG_MODE : BooleanPref(false, ImmichApplication.appContext!!.getString(R.string.enable_debug_mode), ImmichApplication.appContext!!.getString(R.string.enable_debug_mode_desc))
 data object LOAD_BACKGROUND_IMAGE : BooleanPref(true, ImmichApplication.appContext!!.getString(R.string.load_selected_item_as_background), ImmichApplication.appContext!!.getString(R.string.load_selected_item_as_background_desc))
-data object HIDDEN_HOME_ITEMS : StringSetPref(emptySet(), "", "")
+data object HIDDEN_HOME_ITEMS : StringSetPref(
+    setOf(
+        ImmichApplication.appContext!!.getString(R.string.recent),
+        ImmichApplication.appContext!!.getString(R.string.folders)
+    ), "", "")
 data object USER_ID : NotUserEditableStringPref(ImmichApplication.appContext!!.getString(R.string.user_id), ImmichApplication.appContext!!.getString(R.string.user_id_desc))
 
 // seasonal/random/recents
