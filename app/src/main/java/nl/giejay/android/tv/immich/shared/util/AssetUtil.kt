@@ -82,7 +82,7 @@ fun Asset.toSliderItem(): SliderItem {
         ApiUtil.getFileUrl(this.id, this.type, PreferenceManager.get(SLIDER_FORCE_ORIGINAL_VIDEO)),
         SliderItemType.valueOf(this.type.uppercase()),
         this.exifInfo?.orientation ?: 1,
-        mapOf(MetaDataType.DATE to this.exifInfo?.dateTimeOriginal?.let { formatDate(it) },
+        mapOf(MetaDataType.DATE to (this.exifInfo?.dateTimeOriginal ?: this.fileModifiedAt ?: this.createdAt)?.let { formatDate(it) },
             MetaDataType.CITY to this.exifInfo?.city,
             MetaDataType.COUNTRY to this.exifInfo?.country,
             MetaDataType.DESCRIPTION to this.exifInfo?.description,
