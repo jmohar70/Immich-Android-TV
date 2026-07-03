@@ -5,6 +5,9 @@ on:
     branches: [ "**" ]
   workflow_dispatch: {}
 
+permissions:
+  contents: write
+
 jobs:
   build-debug:
     runs-on: ubuntu-latest
@@ -41,8 +44,22 @@ jobs:
       - name: Build debug APK
         run: ./gradlew assembleDebug
 
+      - name: Rename APK with commit info
+        run: cp ./app/build/outputs/apk/debug/*.apk ./immich-tv-debug.apk
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: immich-tv-debug.apk
           path: ./app/build/outputs/apk/debug/*.apk
+
+      - name: Publish as a Release (direct, unzipped download link)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest-debug
+          name: "Latest debug build (${{ github.sha }})"
+          body: "Automatically built debug APK from the latest push. Debug-signed, for personal sideloading only."
+          prerelease: true
+          files: ./immich-tv-debug.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
