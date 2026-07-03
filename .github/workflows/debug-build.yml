@@ -1,11 +1,5 @@
 name: Debug APK (no signing secrets required)
 
-# Builds a debug APK on every push to any branch. Unlike Android CI
-# (android.yml), this does not need RELEASE_KEYSTORE_* secrets, which
-# only exist in the upstream repo and are never copied to forks. Debug
-# builds are signed with the standard Android debug key, which is
-# always available, and are perfectly fine for sideloading onto your
-# own device via Downloader/adb.
 on:
   push:
     branches: [ "**" ]
