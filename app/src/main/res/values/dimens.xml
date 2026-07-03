@@ -81,4 +81,11 @@
     <dimen name="add_remove_margin">20dp</dimen>
     <dimen name="card_width">192dp</dimen>
     <dimen name="card_height">96dp</dimen>
+
+    <!-- Experimental: overrides Leanback's own internal dimen of the same name to narrow
+         the left navigation (headers) panel by ~8%. We couldn't verify Leanback's exact
+         default value from here, so this is a best estimate (240dp -> 220dp) - please report
+         back whether this had any visible effect at all, and in which direction, so it can
+         be tuned further if needed. -->
+    <dimen name="lb_browse_headers_width">220dp</dimen>
 </resources>
