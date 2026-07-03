@@ -46,10 +46,23 @@ class HomeFragment : BrowseSupportFragment() {
         loadData()
 
         mainFragmentRegistry.registerFragment(PageRow::class.java, PageRowFragmentFactory())
+        // Safety net: BrandingRow should never actually become the "current page" (it's
+        // unfocusable and we always keep selectedPosition past it), but if some Leanback
+        // internal state transition ever does select it anyway, show a blank fragment
+        // instead of crashing with "no fragment factory registered for this row type".
+        mainFragmentRegistry.registerFragment(BrandingRow::class.java, object : FragmentFactory<Fragment>() {
+            override fun createFragment(rowObj: Any): Fragment = Fragment()
+        })
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Must happen after the view hierarchy (and headers fragment) exists, otherwise
+        // this silently has no effect and the fixed branding row at position 0 can end up
+        // being treated as the initially selected/active page.
+        selectedPosition = 1
+
         headersSupportFragment.setOnHeaderViewSelectedListener { _, row ->
             title = row?.headerItem?.name ?: "-"
             selectedPosition = row?.let { mRowsAdapter.indexOf(it) } ?: 0
@@ -110,7 +123,6 @@ class HomeFragment : BrowseSupportFragment() {
         rows = createRows()
         mRowsAdapter.addAll(0, rows.filter { !PreferenceManager.itemInStringSet(it.headerItem.name, HIDDEN_HOME_ITEMS) })
         mRowsAdapter.add(0, BrandingRow())
-        selectedPosition = 1
     }
 
     private fun createRows(): List<PageRow> {
