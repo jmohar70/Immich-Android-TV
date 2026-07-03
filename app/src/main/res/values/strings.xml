@@ -65,6 +65,7 @@
     <string name="timeline">Timeline</string>
     <string name="random">Random</string>
     <string name="people">People</string>
+    <string name="places">Places</string>
     <string name="recent">Recent</string>
     <string name="albums">Albums</string>
     <string name="server">Server</string>

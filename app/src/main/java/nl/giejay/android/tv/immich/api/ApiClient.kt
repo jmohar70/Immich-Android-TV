@@ -69,6 +69,12 @@ class ApiClient(private val config: ApiClientConfig) {
         return executeAPICall(200) { service.listPeople() }.map { response -> response.people.filter { !it.name.isNullOrBlank() } }
     }
 
+    suspend fun listPlaces(): Either<String, List<Asset>> {
+        return executeAPICall(200) { service.searchCities() }.map { assets ->
+            assets.filter { !it.exifInfo?.city.isNullOrBlank() }
+        }
+    }
+
     suspend fun listAssetsFromAlbum(albumId: String): Either<String, AlbumDetails> {
         return executeAPICall(200) {
             val response = service.listAssetsFromAlbum(albumId)
@@ -109,6 +115,7 @@ class ApiClient(private val config: ApiClientConfig) {
                            personIds: List<UUID> = emptyList(),
                            fromDate: LocalDateTime? = null,
                            endDate: LocalDateTime? = null,
+                           city: String? = null,
                            contentType: ContentType): Either<String, List<Asset>> {
         val searchRequest = SearchRequest(page,
             pageCount,
@@ -117,7 +124,8 @@ class ApiClient(private val config: ApiClientConfig) {
             if (contentType == ContentType.ALL) null else contentType.toString(),
             personIds,
             endDate?.format(dateTimeFormatter),
-            fromDate?.format(dateTimeFormatter))
+            fromDate?.format(dateTimeFormatter),
+            city)
         return (if (random) {
             executeAPICall(200) { service.randomAssets(searchRequest) }
         } else {

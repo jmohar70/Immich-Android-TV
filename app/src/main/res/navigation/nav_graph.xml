@@ -96,6 +96,15 @@
     </fragment>
 
     <fragment
+        android:id="@+id/placeAssetsFragment"
+        android:name="nl.giejay.android.tv.immich.places.PlaceAssetsFragment"
+        android:label="PlaceAssetsFragment">
+        <argument
+            android:name="cityName"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
         android:id="@+id/peopleFragment"
         android:name="nl.giejay.android.tv.immich.people.PeopleFragment"
         android:label="PeopleFragment">
@@ -213,6 +222,9 @@
         <action
             android:id="@+id/action_homeFragment_to_personAssetsFragment"
             app:destination="@id/personAssetsFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_placeAssetsFragment"
+            app:destination="@id/placeAssetsFragment" />
         <action
             android:id="@+id/action_homeFragment_to_view_settings"
             app:destination="@id/viewSettings" />

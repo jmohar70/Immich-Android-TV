@@ -29,6 +29,9 @@ interface ApiService {
     @GET("people")
     suspend fun listPeople(): Response<PeopleResponse>
 
+    @GET("search/cities")
+    suspend fun searchCities(): Response<List<Asset>>
+
     @GET("albums/{albumId}")
     suspend fun listAssetsFromAlbum(@Path("albumId") albumId: String): Response<AlbumDetails>
 
