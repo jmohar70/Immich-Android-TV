@@ -31,5 +31,7 @@ data class Asset(
     val people: List<Person>?,
     val tags: List<Tag>?,
     val originalPath: String?,
-    val originalFileName: String?
+    val originalFileName: String?,
+    val fileCreatedAt: Date? = null,
+    val isFavorite: Boolean = false
 )
