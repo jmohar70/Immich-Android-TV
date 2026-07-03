@@ -49,6 +49,10 @@
         android:id="@+id/action_to_metadata_fragment"
         app:destination="@id/metaDataCustomizer" />
 
+    <action
+        android:id="@+id/action_global_to_timeline_grid"
+        app:destination="@id/timelineFragment" />
+
     <!--    <fragment-->
     <!--        android:id="@+id/playbackFragment"-->
     <!--        android:name="nl.giejay.android.tv.immich.playback.PlaybackFragment"-->
@@ -110,6 +114,15 @@
         android:id="@+id/allAssetsFragment"
         android:name="nl.giejay.android.tv.immich.assets.AllAssetFragment"
         android:label="AllAssetsFragment">
+    </fragment>
+
+    <fragment
+        android:id="@+id/timelineFragment"
+        android:name="nl.giejay.android.tv.immich.assets.TimelineFragment"
+        android:label="TimelineFragment">
+        <argument
+            android:name="timeBucket"
+            app:argType="string" />
     </fragment>
 
     <fragment

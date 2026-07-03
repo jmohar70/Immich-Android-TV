@@ -24,6 +24,7 @@ import nl.giejay.android.tv.immich.assets.FolderFragment
 import nl.giejay.android.tv.immich.assets.RandomAssetsFragment
 import nl.giejay.android.tv.immich.assets.RecentAssetsFragment
 import nl.giejay.android.tv.immich.assets.SimilarTimeAssetsFragment
+import nl.giejay.android.tv.immich.assets.TimelineBucketPickerFragment
 import nl.giejay.android.tv.immich.people.PeopleFragment
 import nl.giejay.android.tv.immich.settings.SettingsFragment
 import nl.giejay.android.tv.immich.shared.fragment.GridFragment
@@ -127,6 +128,7 @@ class HomeFragment : BrowseSupportFragment() {
                 }
             },
             Header(ImmichApplication.appContext!!.getString(R.string.photos)) { AllAssetFragment() },
+            Header(ImmichApplication.appContext!!.getString(R.string.timeline)) { TimelineBucketPickerFragment() },
             Header(ImmichApplication.appContext!!.getString(R.string.random)) { RandomAssetsFragment() },
             Header(ImmichApplication.appContext!!.getString(R.string.people)) { PeopleFragment() },
             Header(ImmichApplication.appContext!!.getString(R.string.recent)) { RecentAssetsFragment() },
