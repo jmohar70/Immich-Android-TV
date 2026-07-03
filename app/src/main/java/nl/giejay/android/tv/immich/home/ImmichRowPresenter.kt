@@ -17,8 +17,13 @@ class ImmichRowPresenter : Presenter() {
             .inflate(R.layout.presenter_row, parent, false)
 
         val viewHolder = ImmichRowViewHolder(root)
-        viewHolder.tvTitle.setOnFocusChangeListener { _, hasFocus ->
-            viewHolder.focusIndicator.visibility = if (hasFocus) View.VISIBLE else View.INVISIBLE
+        // A plain OnFocusChangeListener on tvTitle didn't reliably fire for every row once
+        // Leanback's RecyclerView started recycling/reusing view holders. A global focus
+        // observer comparing against this row's own tvTitle instance is more robust, since
+        // it doesn't depend on the listener surviving whatever Leanback does internally with
+        // focus during recycling.
+        root.viewTreeObserver.addOnGlobalFocusChangeListener { _, newFocus ->
+            viewHolder.focusIndicator.visibility = if (newFocus == viewHolder.tvTitle) View.VISIBLE else View.INVISIBLE
         }
         return viewHolder
     }
