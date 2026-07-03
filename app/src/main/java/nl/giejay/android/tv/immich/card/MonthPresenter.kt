@@ -22,14 +22,16 @@ class MonthPresenter(context: Context, style: Int = R.style.DefaultCardTheme) :
 
     override fun onCreateView(): ImageCardView {
         val cardView = ImageCardView(context)
-        cardView.setMainImageDimensions(300, 100)
+        cardView.setMainImageDimensions(300, 150)
         return cardView
     }
 
     override fun onBindViewHolder(card: ICard, cardView: ImageCardView) {
         cardView.tag = card
-        cardView.titleText = card.title
-        cardView.contentText = card.description
+        // Combine month + count into a single title line (e.g. "March (45)") instead of
+        // stacking them as separate title/content lines, so the info area only needs to
+        // reserve height for one line of text instead of two.
+        cardView.titleText = if (card.description.isNullOrBlank()) card.title else "${card.title}  ${card.description}"
 
         val color = generateColor(card.title)
         cardView.mainImageView!!.scaleType = ImageView.ScaleType.CENTER

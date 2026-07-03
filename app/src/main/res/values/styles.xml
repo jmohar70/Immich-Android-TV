@@ -200,6 +200,22 @@
         <item name="android:layout_height">@dimen/default_image_card_height</item>
     </style>
 
+    <!-- Compact info area: single line, smaller text, tighter padding, so the gray bar
+         covers roughly 20-25% of the thumbnail instead of ~50%. -->
+    <style name="CompactCardTitleStyle" parent="Widget.Leanback.ImageCardView.TitleStyle">
+        <item name="android:textSize">12sp</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+    </style>
+
+    <style name="CompactCardContentStyle" parent="Widget.Leanback.ImageCardView.ContentStyle">
+        <item name="android:textSize">10sp</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">4dp</item>
+    </style>
+
     <style name="DefaultCardStyle" parent="Widget.Leanback.ImageCardViewStyle">
         <item name="cardBackground">@null</item>
     </style>
@@ -207,6 +223,8 @@
     <style name="DefaultCardTheme" parent="Theme.Leanback">
         <item name="imageCardViewStyle">@style/DefaultCardStyle</item>
         <item name="imageCardViewImageStyle">@style/DefaultCardImageStyle</item>
+        <item name="imageCardViewTitleStyle">@style/CompactCardTitleStyle</item>
+        <item name="imageCardViewContentStyle">@style/CompactCardContentStyle</item>
     </style>
 
     <!-- Squared single line card with colored footer style. Used in cards example. -->
