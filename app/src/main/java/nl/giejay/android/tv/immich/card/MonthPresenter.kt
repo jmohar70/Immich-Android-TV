@@ -6,14 +6,16 @@ import android.graphics.drawable.ColorDrawable
 import android.view.ContextThemeWrapper
 import android.widget.ImageView
 import androidx.leanback.widget.ImageCardView
+import com.bumptech.glide.Glide
 import nl.giejay.android.tv.immich.R
 import nl.giejay.android.tv.immich.shared.presenter.AbstractPresenter
 
 /**
  * Small "chip" style presenter used by the Timeline's year/month picker.
- * Instead of a photo thumbnail it shows a stable, generated background
- * color per month/year label, since fetching a representative thumbnail
- * for every bucket up front would be expensive.
+ * Shows a representative photo thumbnail from that month when available;
+ * falls back to a stable, generated background color per month/year label
+ * (e.g. while the thumbnail is still loading, or if the month has no
+ * assets for some reason).
  */
 class MonthPresenter(context: Context, style: Int = R.style.DefaultCardTheme) :
     AbstractPresenter<ImageCardView, ICard>(ContextThemeWrapper(context, style)) {
@@ -30,15 +32,28 @@ class MonthPresenter(context: Context, style: Int = R.style.DefaultCardTheme) :
         cardView.contentText = card.description
 
         val color = generateColor(card.title)
-        cardView.mainImageView!!.setImageDrawable(ColorDrawable(color))
         cardView.mainImageView!!.scaleType = ImageView.ScaleType.CENTER
+        cardView.mainImageView!!.setImageDrawable(ColorDrawable(color))
+
+        if (card.thumbnailUrl != null) {
+            Glide.with(context)
+                .asBitmap()
+                .centerCrop()
+                .load(card.thumbnailUrl)
+                .into(cardView.mainImageView!!)
+            cardView.mainImageView!!.scaleType = ImageView.ScaleType.CENTER_CROP
+        }
 
         setSelected(cardView, card.selected)
     }
 
     override fun onUnbindViewHolder(viewHolder: ViewHolder) {
         super.onUnbindViewHolder(viewHolder)
-        (viewHolder.view as ImageCardView).mainImageView!!.setImageDrawable(null)
+        try {
+            Glide.with(context).clear((viewHolder.view as ImageCardView).mainImageView!!)
+        } catch (e: IllegalArgumentException) {
+            // view already detached, nothing to clean up
+        }
     }
 
     private fun generateColor(str: String): Int {

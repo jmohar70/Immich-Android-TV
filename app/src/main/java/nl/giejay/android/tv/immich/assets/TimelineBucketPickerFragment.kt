@@ -10,6 +10,7 @@ import androidx.leanback.widget.ListRow
 import androidx.leanback.widget.ListRowPresenter
 import androidx.leanback.widget.OnItemViewClickedListener
 import androidx.navigation.fragment.findNavController
+import arrow.core.getOrNull
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -18,6 +19,7 @@ import nl.giejay.android.tv.immich.R
 import nl.giejay.android.tv.immich.api.ApiClient
 import nl.giejay.android.tv.immich.api.ApiClientConfig
 import nl.giejay.android.tv.immich.api.model.Bucket
+import nl.giejay.android.tv.immich.api.util.ApiUtil
 import nl.giejay.android.tv.immich.card.Card
 import nl.giejay.android.tv.immich.card.MonthPresenter
 import nl.giejay.android.tv.immich.shared.prefs.API_KEY
@@ -26,6 +28,7 @@ import nl.giejay.android.tv.immich.shared.prefs.DISABLE_SSL_VERIFICATION
 import nl.giejay.android.tv.immich.shared.prefs.HOST_NAME
 import nl.giejay.android.tv.immich.shared.prefs.PhotosOrder
 import nl.giejay.android.tv.immich.shared.prefs.PreferenceManager
+import nl.giejay.android.tv.immich.shared.util.Utils.pmap
 import timber.log.Timber
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -94,6 +97,8 @@ class TimelineBucketPickerFragment : RowsSupportFragment(), BrowseSupportFragmen
             bucket.timeBucket.take(4)
         }
 
+        val listRowAdaptersByBucket = mutableListOf<Pair<Bucket, ArrayObjectAdapter>>()
+
         activity?.runOnUiThread {
             rowsAdapter.clear()
             val cardPresenter = MonthPresenter(requireContext())
@@ -115,6 +120,32 @@ class TimelineBucketPickerFragment : RowsSupportFragment(), BrowseSupportFragmen
                 }
                 listRowAdapter.addAll(0, cards)
                 rowsAdapter.add(ListRow(header, listRowAdapter))
+                yearBuckets.forEach { bucket -> listRowAdaptersByBucket.add(bucket to listRowAdapter) }
+            }
+
+            loadThumbnails(listRowAdaptersByBucket)
+        }
+    }
+
+    /**
+     * Fetches one representative asset id per bucket (bounded concurrency, so we don't fire
+     * off a request per month all at once for someone with many years of photos) and swaps
+     * each card's colored placeholder for a real photo thumbnail once it's ready.
+     */
+    private fun loadThumbnails(listRowAdaptersByBucket: List<Pair<Bucket, ArrayObjectAdapter>>) {
+        ioScope.launch {
+            val results = listRowAdaptersByBucket.pmap(concurrency = 8) { (bucket, rowAdapter) ->
+                Triple(bucket, rowAdapter, apiClient.getBucketThumbnailAssetId(bucket.timeBucket).getOrNull())
+            }
+            activity?.runOnUiThread {
+                results.forEach { (bucket, rowAdapter, assetId) ->
+                    if (assetId == null) return@forEach
+                    val index = (0 until rowAdapter.size()).firstOrNull { (rowAdapter.get(it) as? Card)?.id == bucket.timeBucket }
+                    if (index != null) {
+                        val card = rowAdapter.get(index) as Card
+                        rowAdapter.replace(index, card.copy(thumbnailUrl = ApiUtil.getThumbnailUrl(assetId, "thumbnail")))
+                    }
+                }
             }
         }
     }

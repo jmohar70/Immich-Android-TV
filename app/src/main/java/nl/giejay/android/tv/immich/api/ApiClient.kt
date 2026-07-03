@@ -153,6 +153,15 @@ class ApiClient(private val config: ApiClientConfig) {
         }
     }
 
+    // Lightweight: only reads the columnar bucket response for its asset id list, without
+    // resolving each id to a full Asset. Used to show a representative thumbnail per month
+    // in the Timeline picker, where we only need one id per bucket, not every asset's details.
+    suspend fun getBucketThumbnailAssetId(bucket: String): Either<String, String?> {
+        return executeAPICall(200) {
+            service.getBucketV2(albumId = null, timeBucket = bucket, order = "desc")
+        }.map { it.id.firstOrNull() }
+    }
+
     suspend fun getAssetsForBucket(albumId: String, bucket: String, order: PhotosOrder): Either<String, List<Asset>> {
         val safeAlbumId = if (albumId.isBlank()) null else albumId
         val response = executeAPICall(200) {
