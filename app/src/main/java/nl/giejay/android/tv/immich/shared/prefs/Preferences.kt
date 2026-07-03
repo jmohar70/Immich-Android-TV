@@ -149,6 +149,7 @@ data object SLIDER_METADATA_CUSTOMIZER : ActionPref(ImmichApplication.appContext
 
 data object SLIDER_ONLY_USE_THUMBNAILS : BooleanPref(true, ImmichApplication.appContext!!.getString(R.string.use_hd_thumbnails) , ImmichApplication.appContext!!.getString(R.string.use_hd_thumbnails_text))
 data object SLIDER_MERGE_PORTRAIT_PHOTOS : BooleanPref(true, ImmichApplication.appContext!!.getString(R.string.merge_portrait_photos), ImmichApplication.appContext!!.getString(R.string.merge_portrait_photos_desc))
+data object SLIDER_REVERSE_DIRECTION : BooleanPref(false, ImmichApplication.appContext!!.getString(R.string.reverse_slideshow_direction), ImmichApplication.appContext!!.getString(R.string.reverse_slideshow_direction_desc))
 data object SLIDER_MAX_CUT_OFF_WIDTH : IntSeekbarPref(20,
     ImmichApplication.appContext!!.getString(R.string.safe_center_crop_max_cutoff_height),
     ImmichApplication.appContext!!.getString(R.string.safe_center_crop_max_cutoff_height_desc))
@@ -333,6 +334,7 @@ data object ViewPrefScreen : PrefScreen(ImmichApplication.appContext!!.getString
             SLIDER_ONLY_USE_THUMBNAILS,
             SLIDER_FORCE_ORIGINAL_VIDEO,
             SLIDER_MERGE_PORTRAIT_PHOTOS,
+            SLIDER_REVERSE_DIRECTION,
             SLIDER_ZOOM_SCROLL_PANORAMAS,
             SLIDER_ZOOM_EFFECT,
             SLIDER_PAN_EFFECT,

@@ -138,6 +138,8 @@
     <string name="configure_metadata_viewer">Configure what to show in viewer</string>
     <string name="merge_portrait_photos">Merge portrait photos</string>
     <string name="merge_portrait_photos_desc">Show two portrait photos next to each other</string>
+    <string name="reverse_slideshow_direction">Reverse slideshow direction</string>
+    <string name="reverse_slideshow_direction_desc">Play towards older photos instead of newer ones when starting a slideshow from a selected photo</string>
     <string name="safe_center_crop_max_cutoff_height">Safe Center Crop max cutoff height %</string>
     <string name="safe_center_crop_max_cutoff_height_desc">Maximum percentage to cut off image height if using SafeCenterCrop</string>
     <string name="safe_center_crop_max_cutoff_width">Safe Center Crop max cutoff width %</string>

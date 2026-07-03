@@ -274,10 +274,18 @@ class MediaSliderView(context: Context) : ConstraintLayout(context) {
     }
 
     private fun goToNextAsset() {
-        if (mPager.currentItem < mPager.adapter!!.count - 1) {
-            mPager.setCurrentItem(mPager.currentItem + 1, config.enableSlideAnimation)
+        if (config.reverseSlideshowDirection) {
+            if (mPager.currentItem > 0) {
+                mPager.setCurrentItem(mPager.currentItem - 1, config.enableSlideAnimation)
+            } else {
+                mPager.setCurrentItem(mPager.adapter!!.count - 1, config.enableSlideAnimation)
+            }
         } else {
-            mPager.setCurrentItem(0, config.enableSlideAnimation)
+            if (mPager.currentItem < mPager.adapter!!.count - 1) {
+                mPager.setCurrentItem(mPager.currentItem + 1, config.enableSlideAnimation)
+            } else {
+                mPager.setCurrentItem(0, config.enableSlideAnimation)
+            }
         }
     }
 
