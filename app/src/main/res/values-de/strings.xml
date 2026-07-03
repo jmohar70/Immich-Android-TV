@@ -57,7 +57,7 @@
     <string name="season">%1$s Staffel %2$s</string>
 
     <!-- Home Menu -->
-    <string name="seasonal">Saisonal</string>
+    <string name="seasonal">Erinnerungen</string>
     <string name="folders">Ordner</string>
     <string name="settings">Optionen</string>
     <string name="edit">Bearbeiten</string>
