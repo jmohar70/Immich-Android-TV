@@ -3,6 +3,7 @@ package nl.giejay.android.tv.immich.home
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import androidx.leanback.widget.Presenter
 import androidx.leanback.widget.Row
 import nl.giejay.android.tv.immich.R
@@ -17,14 +18,30 @@ class ImmichRowPresenter : Presenter() {
             .inflate(R.layout.presenter_row, parent, false)
 
         val viewHolder = ImmichRowViewHolder(root)
-        // A plain OnFocusChangeListener on tvTitle didn't reliably fire for every row once
-        // Leanback's RecyclerView started recycling/reusing view holders. A global focus
-        // observer comparing against this row's own tvTitle instance is more robust, since
-        // it doesn't depend on the listener surviving whatever Leanback does internally with
-        // focus during recycling.
-        root.viewTreeObserver.addOnGlobalFocusChangeListener { _, newFocus ->
-            viewHolder.focusIndicator.visibility = if (newFocus == viewHolder.tvTitle) View.VISIBLE else View.INVISIBLE
-        }
+
+        // Registering the global focus listener directly here (in onCreateViewHolder) is
+        // unreliable: at this point the view has been inflated but is NOT YET attached to
+        // the window, so root.viewTreeObserver returns a temporary, detached observer.
+        // Listeners added to it can silently fail to carry over once the view actually
+        // attaches - which matches exactly what was reported: rows freshly scrolled into
+        // view for the first time (created right as they're about to receive focus) missed
+        // the indicator, while rows that already existed and were re-focused later worked
+        // fine. Registering on actual window-attachment guarantees we always use the real,
+        // live ViewTreeObserver.
+        var focusListener: ViewTreeObserver.OnGlobalFocusChangeListener? = null
+        root.addOnAttachStateChangeListener(object : View.OnAttachStateChangeListener {
+            override fun onViewAttachedToWindow(v: View) {
+                focusListener = ViewTreeObserver.OnGlobalFocusChangeListener { _, newFocus ->
+                    viewHolder.focusIndicator.visibility = if (newFocus == viewHolder.tvTitle) View.VISIBLE else View.INVISIBLE
+                }
+                v.viewTreeObserver.addOnGlobalFocusChangeListener(focusListener)
+            }
+
+            override fun onViewDetachedFromWindow(v: View) {
+                focusListener?.let { v.viewTreeObserver.removeOnGlobalFocusChangeListener(it) }
+                focusListener = null
+            }
+        })
         return viewHolder
     }
 
