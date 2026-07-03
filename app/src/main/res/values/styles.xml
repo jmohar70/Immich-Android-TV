@@ -205,15 +205,26 @@
     <style name="CompactCardTitleStyle" parent="Widget.Leanback.ImageCardView.TitleStyle">
         <item name="android:textSize">12sp</item>
         <item name="android:maxLines">1</item>
-        <item name="android:paddingTop">4dp</item>
-        <item name="android:paddingBottom">4dp</item>
+        <item name="android:paddingTop">2dp</item>
+        <item name="android:paddingBottom">2dp</item>
     </style>
 
     <style name="CompactCardContentStyle" parent="Widget.Leanback.ImageCardView.ContentStyle">
         <item name="android:textSize">10sp</item>
         <item name="android:maxLines">1</item>
         <item name="android:paddingTop">0dp</item>
-        <item name="android:paddingBottom">4dp</item>
+        <item name="android:paddingBottom">2dp</item>
+    </style>
+
+    <!-- The info area CONTAINER also brings its own generous default padding from Leanback,
+         independent of the title/content text styles above - override that too, or the outer
+         padding alone keeps the bar tall even with smaller/tighter text. -->
+    <style name="CompactCardInfoAreaStyle" parent="Widget.Leanback.ImageCardView.InfoAreaStyle">
+        <item name="android:paddingTop">2dp</item>
+        <item name="android:paddingBottom">2dp</item>
+        <item name="android:paddingStart">8dp</item>
+        <item name="android:paddingEnd">8dp</item>
+        <item name="android:minHeight">0dp</item>
     </style>
 
     <style name="DefaultCardStyle" parent="Widget.Leanback.ImageCardViewStyle">
@@ -225,6 +236,7 @@
         <item name="imageCardViewImageStyle">@style/DefaultCardImageStyle</item>
         <item name="imageCardViewTitleStyle">@style/CompactCardTitleStyle</item>
         <item name="imageCardViewContentStyle">@style/CompactCardContentStyle</item>
+        <item name="imageCardViewInfoAreaStyle">@style/CompactCardInfoAreaStyle</item>
     </style>
 
     <!-- Squared single line card with colored footer style. Used in cards example. -->
