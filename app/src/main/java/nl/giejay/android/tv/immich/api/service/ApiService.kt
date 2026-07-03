@@ -33,13 +33,13 @@ interface ApiService {
     suspend fun listAssetsFromAlbum(@Path("albumId") albumId: String): Response<AlbumDetails>
 
     @GET("timeline/buckets")
-    suspend fun listBuckets(@Query("albumId") albumId: String, @Query("size") size: String = "MONTH", @Query("order") order: String = "desc"): Response<List<Bucket>>
+    suspend fun listBuckets(@Query("albumId") albumId: String?, @Query("size") size: String = "MONTH", @Query("order") order: String = "desc"): Response<List<Bucket>>
 
     @GET("timeline/bucket")
-    suspend fun getBucket(@Query("albumId") albumId: String, @Query("timeBucket") timeBucket: String, @Query("size") size: String = "MONTH",  @Query("order") order: String = "desc"): Response<List<Asset>>
+    suspend fun getBucket(@Query("albumId") albumId: String?, @Query("timeBucket") timeBucket: String, @Query("size") size: String = "MONTH",  @Query("order") order: String = "desc"): Response<List<Asset>>
 
     @GET("timeline/bucket")
-    suspend fun getBucketV2(@Query("albumId") albumId: String, @Query("timeBucket") timeBucket: String, @Query("size") size: String = "MONTH",  @Query("order") order: String = "desc"): Response<BucketResponse>
+    suspend fun getBucketV2(@Query("albumId") albumId: String?, @Query("timeBucket") timeBucket: String, @Query("size") size: String = "MONTH",  @Query("order") order: String = "desc"): Response<BucketResponse>
 
     @GET("assets/{id}")
     suspend fun getAsset(@Path("id") id: String): Response<Asset>

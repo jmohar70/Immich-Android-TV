@@ -141,9 +141,15 @@ fun List<Asset>.toCards(): List<Card> {
 }
 
 fun Asset.toCard(): Card {
-    return Card(this.deviceAssetId ?: "",
+    val date = this.exifInfo?.dateTimeOriginal ?: this.fileCreatedAt ?: this.fileModifiedAt
+    return Card(date?.let { formatShortDate(it) } ?: "",
         this.exifInfo?.description ?: "",
         this.id,
         ApiUtil.getThumbnailUrl(this.id, "thumbnail"),
         ApiUtil.getThumbnailUrl(this.id, "preview"))
+}
+
+private fun formatShortDate(date: Date): String {
+    val locale = Locale.getDefault(Locale.Category.FORMAT)
+    return SimpleDateFormat("dd MMM yyyy", locale).format(date)
 }

@@ -139,20 +139,22 @@ class ApiClient(private val config: ApiClientConfig) {
     }
 
     suspend fun listBuckets(albumId: String, order: PhotosOrder): Either<String, List<Bucket>> {
+        val safeAlbumId = if (albumId.isBlank()) null else albumId
         return executeAPICall(200) {
-            service.listBuckets(albumId = albumId, order = if (order == PhotosOrder.OLDEST_NEWEST) "asc" else "desc")
+            service.listBuckets(albumId = safeAlbumId, order = if (order == PhotosOrder.OLDEST_NEWEST) "asc" else "desc")
         }
     }
 
     suspend fun getAssetsForBucket(albumId: String, bucket: String, order: PhotosOrder): Either<String, List<Asset>> {
+        val safeAlbumId = if (albumId.isBlank()) null else albumId
         val response = executeAPICall(200) {
-            service.getBucketV2(albumId = albumId, timeBucket = bucket, order = if (order == PhotosOrder.OLDEST_NEWEST) "asc" else "desc")
+            service.getBucketV2(albumId = safeAlbumId, timeBucket = bucket, order = if (order == PhotosOrder.OLDEST_NEWEST) "asc" else "desc")
         }.map {
             it.id.pmap { t -> service.getAsset(t).body() }.filterNotNull().toList()
         }
         if (response.isLeft()) {
             return executeAPICall(200) {
-                service.getBucket(albumId = albumId, timeBucket = bucket, order = if (order == PhotosOrder.OLDEST_NEWEST) "asc" else "desc")
+                service.getBucket(albumId = safeAlbumId, timeBucket = bucket, order = if (order == PhotosOrder.OLDEST_NEWEST) "asc" else "desc")
             }
         }
         return response
