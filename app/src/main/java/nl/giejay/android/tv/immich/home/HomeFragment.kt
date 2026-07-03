@@ -46,23 +46,10 @@ class HomeFragment : BrowseSupportFragment() {
         loadData()
 
         mainFragmentRegistry.registerFragment(PageRow::class.java, PageRowFragmentFactory())
-        // Leanback briefly needs a valid MainFragmentAdapterProvider fragment for whatever
-        // is at position 0 (our fixed BrandingRow) during the very first layout pass, before
-        // onViewCreated() below gets to move selectedPosition past it. A blank fragment here
-        // keeps that moment harmless.
-        mainFragmentRegistry.registerFragment(BrandingRow::class.java, object : FragmentFactory<Fragment>() {
-            override fun createFragment(rowObj: Any): Fragment = BlankMainFragment()
-        })
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        // Only safe to call after the view hierarchy exists (calling this from onCreate()
-        // throws a NullPointerException deep in Leanback, since it tries to post on a
-        // BrowseFrameLayout that doesn't exist yet). This runs right after onCreateView(),
-        // so the BlankMainFragment above is shown only for an imperceptible instant.
-        selectedPosition = 1
 
         headersSupportFragment.setOnHeaderViewSelectedListener { _, row ->
             title = row?.headerItem?.name ?: "-"
@@ -75,11 +62,9 @@ class HomeFragment : BrowseSupportFragment() {
                 if(immichRowPresenter.editMode){
                     mRowsAdapter.clear()
                     mRowsAdapter.addAll(0, rows.filter { it.headerItem.name != getString(R.string.settings) })
-                    mRowsAdapter.add(0, BrandingRow())
                 } else {
                     mRowsAdapter.clear();
                     mRowsAdapter.addAll(0, rows.filter { !PreferenceManager.itemInStringSet(it.headerItem.name, HIDDEN_HOME_ITEMS) })
-                    mRowsAdapter.add(0, BrandingRow())
                 }
                 adapter.notifyItemRangeChanged(0, mRowsAdapter.size());
             } else if(immichRowPresenter.editMode){
@@ -112,7 +97,6 @@ class HomeFragment : BrowseSupportFragment() {
                 SectionRow::class.java,
                 RowHeaderPresenter()
             )
-            .addClassPresenter(BrandingRow::class.java, BrandingPresenter())
             .addClassPresenter(Row::class.java, immichRowPresenter)
 
         setHeaderPresenterSelector(sHeaderPresenter)
@@ -123,7 +107,6 @@ class HomeFragment : BrowseSupportFragment() {
         adapter = mRowsAdapter
         rows = createRows()
         mRowsAdapter.addAll(0, rows.filter { !PreferenceManager.itemInStringSet(it.headerItem.name, HIDDEN_HOME_ITEMS) })
-        mRowsAdapter.add(0, BrandingRow())
     }
 
     private fun createRows(): List<PageRow> {
