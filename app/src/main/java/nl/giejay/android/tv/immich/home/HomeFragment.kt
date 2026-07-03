@@ -61,9 +61,11 @@ class HomeFragment : BrowseSupportFragment() {
                 if(immichRowPresenter.editMode){
                     mRowsAdapter.clear()
                     mRowsAdapter.addAll(0, rows.filter { it.headerItem.name != getString(R.string.settings) })
+                    mRowsAdapter.add(0, BrandingRow())
                 } else {
                     mRowsAdapter.clear();
                     mRowsAdapter.addAll(0, rows.filter { !PreferenceManager.itemInStringSet(it.headerItem.name, HIDDEN_HOME_ITEMS) })
+                    mRowsAdapter.add(0, BrandingRow())
                 }
                 adapter.notifyItemRangeChanged(0, mRowsAdapter.size());
             } else if(immichRowPresenter.editMode){
@@ -96,6 +98,7 @@ class HomeFragment : BrowseSupportFragment() {
                 SectionRow::class.java,
                 RowHeaderPresenter()
             )
+            .addClassPresenter(BrandingRow::class.java, BrandingPresenter())
             .addClassPresenter(Row::class.java, immichRowPresenter)
 
         setHeaderPresenterSelector(sHeaderPresenter)
@@ -106,6 +109,8 @@ class HomeFragment : BrowseSupportFragment() {
         adapter = mRowsAdapter
         rows = createRows()
         mRowsAdapter.addAll(0, rows.filter { !PreferenceManager.itemInStringSet(it.headerItem.name, HIDDEN_HOME_ITEMS) })
+        mRowsAdapter.add(0, BrandingRow())
+        selectedPosition = 1
     }
 
     private fun createRows(): List<PageRow> {
