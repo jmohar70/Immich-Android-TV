@@ -45,17 +45,24 @@ class HomeFragment : BrowseSupportFragment() {
         setupUi()
         loadData()
 
-        // Must be set before onCreateView() runs, since that's where Leanback decides
-        // which row's fragment to create initially (BrowseSupportFragment.createMainFragment).
-        // Setting it later (e.g. in onViewCreated) is too late - it would already have
-        // tried (and failed) to create a fragment for the BrandingRow at position 0.
-        selectedPosition = 1
-
         mainFragmentRegistry.registerFragment(PageRow::class.java, PageRowFragmentFactory())
+        // Leanback briefly needs a valid MainFragmentAdapterProvider fragment for whatever
+        // is at position 0 (our fixed BrandingRow) during the very first layout pass, before
+        // onViewCreated() below gets to move selectedPosition past it. A blank fragment here
+        // keeps that moment harmless.
+        mainFragmentRegistry.registerFragment(BrandingRow::class.java, object : FragmentFactory<Fragment>() {
+            override fun createFragment(rowObj: Any): Fragment = BlankMainFragment()
+        })
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Only safe to call after the view hierarchy exists (calling this from onCreate()
+        // throws a NullPointerException deep in Leanback, since it tries to post on a
+        // BrowseFrameLayout that doesn't exist yet). This runs right after onCreateView(),
+        // so the BlankMainFragment above is shown only for an imperceptible instant.
+        selectedPosition = 1
 
         headersSupportFragment.setOnHeaderViewSelectedListener { _, row ->
             title = row?.headerItem?.name ?: "-"
