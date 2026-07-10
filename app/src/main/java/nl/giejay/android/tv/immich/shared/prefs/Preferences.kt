@@ -138,7 +138,7 @@ data object SLIDER_ANIMATION_SPEED : IntListPref(0,
 
 data object SLIDER_SHOW_DESCRIPTION : BooleanPref(true, ImmichApplication.appContext!!.getString(R.string.show_description_slideshow), ImmichApplication.appContext!!.getString(R.string.show_description_slideshow_desc))
 data object SLIDER_SHOW_MEDIA_COUNT : BooleanPref(true, ImmichApplication.appContext!!.getString(R.string.show_media_count_slideshow), ImmichApplication.appContext!!.getString(R.string.show_media_count_slideshow_desc))
-data object SLIDER_SHOW_DATE : BooleanPref(false, ImmichApplication.appContext!!.getString(R.string.show_date_slideshow), ImmichApplication.appContext!!.getString(R.string.show_date_slideshow_desc))
+data object SLIDER_SHOW_DATE : BooleanPref(true, ImmichApplication.appContext!!.getString(R.string.show_date_slideshow), ImmichApplication.appContext!!.getString(R.string.show_date_slideshow_desc))
 data object SLIDER_SHOW_CITY : BooleanPref(true, ImmichApplication.appContext!!.getString(R.string.show_city), ImmichApplication.appContext!!.getString(R.string.show_city_desc))
 data object SLIDER_METADATA_CUSTOMIZER : ActionPref(ImmichApplication.appContext!!.getString(R.string.customize_metadata_viewer), ImmichApplication.appContext!!.getString(R.string.configure_metadata_viewer), { _, navController ->
     navController.navigate(
