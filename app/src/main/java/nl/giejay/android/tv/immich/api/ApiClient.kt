@@ -68,7 +68,7 @@ class ApiClient(private val config: ApiClientConfig) {
     suspend fun listAlbums(assetId: Option<String> = None): Either<String, List<Album>> {
         return executeAPICall(200) { service.listAlbums(false, assetId.getOrNull()) }.flatMap { albums ->
             return executeAPICall(200) { service.listAlbums(true, assetId.getOrNull()) }.map { sharedAlbums ->
-                albums + sharedAlbums
+                (albums + sharedAlbums).distinctBy { it.id }
             }
         }
     }

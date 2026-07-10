@@ -25,7 +25,7 @@ interface ApiService {
     suspend fun randomAssets(@Body searchRequest: SearchRequest): Response<List<Asset>>
 
     @GET("albums")
-    suspend fun listAlbums(@Query("shared") shared: Boolean = false, @Query("assetId") assetId: String? = null): Response<List<Album>>
+    suspend fun listAlbums(@Query("isShared") shared: Boolean = false, @Query("assetId") assetId: String? = null): Response<List<Album>>
 
     @GET("people")
     suspend fun listPeople(): Response<PeopleResponse>
