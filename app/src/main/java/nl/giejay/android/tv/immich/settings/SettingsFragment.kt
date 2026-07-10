@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import nl.giejay.android.tv.immich.ImmichApplication
 import nl.giejay.android.tv.immich.R
@@ -51,6 +52,11 @@ class SettingsFragment : RowsSupportFragment() {
         loadData()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        ioScope.coroutineContext.cancelChildren()
+    }
+
     private fun showStatistics() {
         val apiClient = ApiClient.getClient(
             ApiClientConfig(
@@ -64,11 +70,13 @@ class SettingsFragment : RowsSupportFragment() {
             apiClient.getAssetStatistics().fold(
                 { error ->
                     activity?.runOnUiThread {
+                        if (!isAdded) return@runOnUiThread
                         showDialog(getString(R.string.statistics_dialog_error, error))
                     }
                 },
                 { stats ->
                     activity?.runOnUiThread {
+                        if (!isAdded) return@runOnUiThread
                         showDialog(getString(R.string.statistics_dialog_message, stats.images, stats.videos, stats.total))
                     }
                 }

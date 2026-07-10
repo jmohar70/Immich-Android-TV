@@ -105,6 +105,11 @@ class TimelineBucketPickerFragment : RowsSupportFragment(), BrowseSupportFragmen
         val listRowAdaptersByBucket = mutableListOf<Pair<Bucket, ArrayObjectAdapter>>()
 
         activity?.runOnUiThread {
+            // The fragment can be detached by the time this posted runnable actually runs
+            // (e.g. the user navigated away again in the meantime) - activity being non-null
+            // at schedule time doesn't guarantee that's still true at execution time.
+            if (!isAdded) return@runOnUiThread
+
             rowsAdapter.clear()
             val cardPresenter = MonthPresenter(requireContext())
 
@@ -143,6 +148,8 @@ class TimelineBucketPickerFragment : RowsSupportFragment(), BrowseSupportFragmen
                 Triple(bucket, rowAdapter, apiClient.getBucketThumbnailAssetId(bucket.timeBucket).getOrNull())
             }
             activity?.runOnUiThread {
+                if (!isAdded) return@runOnUiThread
+
                 results.forEach { (bucket, rowAdapter, assetId) ->
                     if (assetId == null) return@forEach
                     val index = (0 until rowAdapter.size()).firstOrNull { (rowAdapter.get(it) as? Card)?.id == bucket.timeBucket }
