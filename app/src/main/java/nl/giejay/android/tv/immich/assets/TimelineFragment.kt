@@ -12,17 +12,19 @@ import nl.giejay.android.tv.immich.shared.prefs.SLIDER_SHOW_MEDIA_COUNT
 
 /**
  * Photo grid for an entire Timeline year, reached from [TimelineBucketPickerFragment]
- * by clicking any month within that year. Loads month-by-month (like
- * AlbumDetailsFragment does for albums) starting from January through December, so a
- * slideshow started here plays through the whole year, not just the single clicked month.
+ * by clicking a specific month. Loads month-by-month (like AlbumDetailsFragment does
+ * for albums), but starting from the *clicked* month and then wrapping forward through
+ * the rest of the year (e.g. clicking March 2026 loads March, April, ... December, then
+ * wraps to January, February), so both the overview and a slideshow started here begin
+ * at the month the user actually picked, rather than always at January.
  */
 class TimelineFragment : GenericAssetFragment() {
 
-    private var year: String? = null
+    private var clickedBucket: String? = null
     private var pageToBucket: Map<Int, String>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        year = arguments?.getString("timeBucket")?.take(4)
+        clickedBucket = arguments?.getString("timeBucket")
         super.onCreate(savedInstanceState)
     }
 
@@ -31,25 +33,27 @@ class TimelineFragment : GenericAssetFragment() {
         pageToBucket = null
     }
 
-    // Always chronological ascending here (Jan -> Dec), regardless of the general
-    // "Photos" sort preference - showing newest-first while progressively loading a whole
-    // year made it look like early months were missing/skipped when they weren't; they
-    // were just sorted further down/out of the initially visible range.
+    // Preserve load order (clicked month first, then wrapping forward through the rest
+    // of the year) instead of re-sorting by date - a global date sort would undo the
+    // "start at the clicked month" ordering below.
     override fun sortItems(items: List<Asset>): List<Asset> {
-        return items.sortedWith(PhotosOrder.OLDEST_NEWEST.sort)
+        return items
     }
 
     override suspend fun loadData(): Either<String, List<Asset>> {
         if (pageToBucket == null) {
-            val yearValue = year ?: return Either.Right(emptyList())
+            val clicked = clickedBucket ?: return Either.Right(emptyList())
+            val yearValue = clicked.take(4)
             return apiClient.listBuckets("", PhotosOrder.NEWEST_OLDEST).map { buckets ->
-                // Always January -> December for this year, regardless of the general
-                // sort order preference, so a slideshow started here plays through the
-                // whole year chronologically.
                 val monthsThisYear = buckets
                     .filter { it.timeBucket.take(4) == yearValue }
                     .sortedBy { it.timeBucket }
-                pageToBucket = monthsThisYear.mapIndexed { index, bucket -> (index + 1) to bucket.timeBucket }.toMap()
+                val startIndex = monthsThisYear.indexOfFirst { it.timeBucket == clicked }.coerceAtLeast(0)
+                // Wrap the year so it starts at the clicked month: March, April, ... December,
+                // January, February.
+                val ordered = monthsThisYear.subList(startIndex, monthsThisYear.size) +
+                    monthsThisYear.subList(0, startIndex)
+                pageToBucket = ordered.mapIndexed { index, bucket -> (index + 1) to bucket.timeBucket }.toMap()
                 return internalLoadData(emptyList())
             }
         } else {
@@ -79,7 +83,9 @@ class TimelineFragment : GenericAssetFragment() {
     ): Either<String, List<Asset>> {
         val bucketForPage = pageToBucket?.get(page)
         return if (bucketForPage != null) {
-            apiClient.getAssetsForBucket("", bucketForPage, PhotosOrder.NEWEST_OLDEST)
+            // Oldest -> newest within each month too, consistent with the forward
+            // (clicked month -> onward) playback/browsing order.
+            apiClient.getAssetsForBucket("", bucketForPage, PhotosOrder.OLDEST_NEWEST)
         } else {
             Either.Right(emptyList())
         }
@@ -99,10 +105,10 @@ class TimelineFragment : GenericAssetFragment() {
         return true
     }
 
-    // Our sortItems() above always orders oldest -> newest, unlike the general default -
-    // so "forward" (incrementing index) already means January -> December here.
-    // Ignore the global reverse-direction preference, which is calibrated for the other
-    // views' default newest-first order.
+    // sortItems() above preserves load order (clicked month first, wrapping forward
+    // through the year) - so "forward" (incrementing index) already plays in that same
+    // order. Ignore the global reverse-direction preference, which is calibrated for the
+    // other views' default newest-first order.
     override fun reverseSlideshowDirection(): Boolean {
         return false
     }
