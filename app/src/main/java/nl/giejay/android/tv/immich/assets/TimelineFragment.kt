@@ -31,6 +31,14 @@ class TimelineFragment : GenericAssetFragment() {
         pageToBucket = null
     }
 
+    // Always chronological ascending here (Jan -> Dec), regardless of the general
+    // "Photos" sort preference - showing newest-first while progressively loading a whole
+    // year made it look like early months were missing/skipped when they weren't; they
+    // were just sorted further down/out of the initially visible range.
+    override fun sortItems(items: List<Asset>): List<Asset> {
+        return items.sortedWith(PhotosOrder.OLDEST_NEWEST.sort)
+    }
+
     override suspend fun loadData(): Either<String, List<Asset>> {
         if (pageToBucket == null) {
             val yearValue = year ?: return Either.Right(emptyList())
@@ -89,5 +97,13 @@ class TimelineFragment : GenericAssetFragment() {
     // clicking a month is to watch its photos, not to browse a grid first.
     override fun autoStartSlideshow(): Boolean {
         return true
+    }
+
+    // Our sortItems() above always orders oldest -> newest, unlike the general default -
+    // so "forward" (incrementing index) already means January -> December here.
+    // Ignore the global reverse-direction preference, which is calibrated for the other
+    // views' default newest-first order.
+    override fun reverseSlideshowDirection(): Boolean {
+        return false
     }
 }
