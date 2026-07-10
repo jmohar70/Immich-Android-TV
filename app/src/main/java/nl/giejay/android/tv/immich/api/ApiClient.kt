@@ -27,7 +27,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import java.time.ZoneId
 import java.util.UUID
 
 data class ApiClientConfig(
@@ -47,7 +47,14 @@ class ApiClient(private val config: ApiClientConfig) {
             return apiClient!!
         }
 
-        val dateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ISO_DATE_TIME;
+        // Immich v3+ validates this strictly against a Zod ISO-8601-datetime schema that
+        // requires an explicit timezone suffix ('Z' or +/-HH:MM). DateTimeFormatter.ISO_DATE_TIME
+        // applied to a plain LocalDateTime produces no such suffix (e.g. "2026-01-15T10:30:00"),
+        // which the server now rejects with a 400 ("expected ISO 8601 datetime string, received
+        // string") - convert to an Instant instead, which always serializes with a trailing 'Z'.
+        fun toIsoInstantString(date: LocalDateTime): String {
+            return date.atZone(ZoneId.systemDefault()).toInstant().toString()
+        }
     }
 
     private val retrofit = Retrofit.Builder()
@@ -142,8 +149,8 @@ class ApiClient(private val config: ApiClientConfig) {
             // null for all content
             if (contentType == ContentType.ALL) null else contentType.toString(),
             personIds,
-            endDate?.format(dateTimeFormatter),
-            fromDate?.format(dateTimeFormatter),
+            endDate?.let { toIsoInstantString(it) },
+            fromDate?.let { toIsoInstantString(it) },
             city,
             // albumIds intentionally omitted here (defaults to null) - not used by this
             // function, only by listAssetsFromAlbum()
