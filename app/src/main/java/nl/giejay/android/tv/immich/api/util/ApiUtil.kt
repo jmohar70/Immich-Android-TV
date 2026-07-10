@@ -61,7 +61,8 @@ object ApiUtil {
                     }
                 }
                 else -> {
-                    Either.Left("Invalid status code from API: $code, make sure you are using the latest Immich server release.")
+                    val body = try { res.errorBody()?.string() } catch (e: Exception) { null }
+                    Either.Left("Invalid status code from API: $code, response: ${body ?: "(no body)"}. Make sure you are using the latest Immich server release.")
                 }
             }
         } catch (e: HttpException) {
