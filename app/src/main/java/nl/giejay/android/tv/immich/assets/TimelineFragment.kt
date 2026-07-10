@@ -2,26 +2,66 @@ package nl.giejay.android.tv.immich.assets
 
 import android.os.Bundle
 import arrow.core.Either
+import arrow.core.flatMap
 import nl.giejay.android.tv.immich.api.ApiClient
 import nl.giejay.android.tv.immich.api.model.Asset
+import nl.giejay.android.tv.immich.shared.prefs.ContentType
 import nl.giejay.android.tv.immich.shared.prefs.PhotosOrder
 import nl.giejay.android.tv.immich.shared.prefs.PreferenceManager
 import nl.giejay.android.tv.immich.shared.prefs.SLIDER_SHOW_MEDIA_COUNT
 
 /**
- * Photo grid for a single Timeline bucket (one calendar month), reached
- * from [TimelineBucketPickerFragment]. Reuses all of GenericAssetFragment's
- * existing grid/slideshow machinery; the only difference is that it loads
- * exactly one bucket's assets in a single call instead of paging through
- * the full library.
+ * Photo grid for an entire Timeline year, reached from [TimelineBucketPickerFragment]
+ * by clicking any month within that year. Loads month-by-month (like
+ * AlbumDetailsFragment does for albums) starting from January through December, so a
+ * slideshow started here plays through the whole year, not just the single clicked month.
  */
 class TimelineFragment : GenericAssetFragment() {
 
-    private var timeBucket: String? = null
+    private var year: String? = null
+    private var pageToBucket: Map<Int, String>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        timeBucket = arguments?.getString("timeBucket")
+        year = arguments?.getString("timeBucket")?.take(4)
         super.onCreate(savedInstanceState)
+    }
+
+    override fun clearState() {
+        super.clearState()
+        pageToBucket = null
+    }
+
+    override suspend fun loadData(): Either<String, List<Asset>> {
+        if (pageToBucket == null) {
+            val yearValue = year ?: return Either.Right(emptyList())
+            return apiClient.listBuckets("", PhotosOrder.NEWEST_OLDEST).map { buckets ->
+                // Always January -> December for this year, regardless of the general
+                // sort order preference, so a slideshow started here plays through the
+                // whole year chronologically.
+                val monthsThisYear = buckets
+                    .filter { it.timeBucket.take(4) == yearValue }
+                    .sortedBy { it.timeBucket }
+                pageToBucket = monthsThisYear.mapIndexed { index, bucket -> (index + 1) to bucket.timeBucket }.toMap()
+                return internalLoadData(emptyList())
+            }
+        } else {
+            return internalLoadData(emptyList())
+        }
+    }
+
+    private suspend fun internalLoadData(prevAssets: List<Asset>): Either<String, List<Asset>> {
+        return loadItems(apiClient, currentPage, FETCH_PAGE_COUNT).flatMap {
+            val filteredItems = it.filter { asset -> currentFilter == ContentType.ALL || asset.type.lowercase() == currentFilter.toString().lowercase() }
+            val combined = prevAssets + filteredItems
+            allPagesLoaded = allPagesLoaded(it)
+            if (combined.size <= FETCH_COUNT && !allPagesLoaded) {
+                // immediately load next month
+                currentPage += 1
+                internalLoadData(combined)
+            } else {
+                Either.Right(combined)
+            }
+        }
     }
 
     override suspend fun loadItems(
@@ -29,19 +69,25 @@ class TimelineFragment : GenericAssetFragment() {
         page: Int,
         pageCount: Int
     ): Either<String, List<Asset>> {
-        val bucket = timeBucket ?: return Either.Right(emptyList())
-        // The bucket endpoint always returns the full month in one call, there is no
-        // paging by page number here - so only fetch on the very first page.
-        if (page > startPage) {
-            return Either.Right(emptyList())
+        val bucketForPage = pageToBucket?.get(page)
+        return if (bucketForPage != null) {
+            apiClient.getAssetsForBucket("", bucketForPage, PhotosOrder.NEWEST_OLDEST)
+        } else {
+            Either.Right(emptyList())
         }
-        return apiClient.getAssetsForBucket("", bucket, PhotosOrder.NEWEST_OLDEST)
     }
 
-    // We always get the complete bucket back in a single call, so there is never a "next page".
-    override fun allPagesLoaded(items: List<Asset>): Boolean = true
+    override fun allPagesLoaded(items: List<Asset>): Boolean {
+        return this.pageToBucket == null || !this.pageToBucket!!.contains(currentPage + 1)
+    }
 
     override fun showMediaCount(): Boolean {
         return PreferenceManager.get(SLIDER_SHOW_MEDIA_COUNT)
+    }
+
+    // Starting a slideshow from Timeline should feel immediate - the whole point of
+    // clicking a month is to watch its photos, not to browse a grid first.
+    override fun autoStartSlideshow(): Boolean {
+        return true
     }
 }

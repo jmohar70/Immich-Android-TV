@@ -228,6 +228,10 @@ class MediaSliderView(context: Context) : ConstraintLayout(context) {
             }
         }
         initViewsAndSetAdapter(listener)
+
+        if (config.autoStartSlideshow) {
+            toggleSlideshow(true)
+        }
     }
 
     private fun setStartPosition() {

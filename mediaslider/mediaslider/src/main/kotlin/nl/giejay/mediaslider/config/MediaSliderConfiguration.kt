@@ -27,6 +27,7 @@ class MediaSliderConfiguration : Parcelable {
     val panEffectPercent: Int
     val useLargeVideoBuffer: Boolean
     val reverseSlideshowDirection: Boolean
+    val autoStartSlideshow: Boolean
 
     constructor(startPosition: Int,
                 interval: Int,
@@ -47,7 +48,8 @@ class MediaSliderConfiguration : Parcelable {
                 zoomEffectPercent: Int,
                 panEffectPercent: Int,
                 useLargeVideoBuffer: Boolean = false,
-                reverseSlideshowDirection: Boolean = false) {
+                reverseSlideshowDirection: Boolean = false,
+                autoStartSlideshow: Boolean = false) {
         this.startPosition = startPosition
         this.interval = interval
         this.isOnlyUseThumbnails = onlyUseThumbnails
@@ -68,6 +70,7 @@ class MediaSliderConfiguration : Parcelable {
         this.panEffectPercent = panEffectPercent
         this.useLargeVideoBuffer = useLargeVideoBuffer
         this.reverseSlideshowDirection = reverseSlideshowDirection
+        this.autoStartSlideshow = autoStartSlideshow
     }
 
     private constructor(`in`: Parcel) {
@@ -88,6 +91,7 @@ class MediaSliderConfiguration : Parcelable {
         this.panEffectPercent = `in`.readInt()
         this.useLargeVideoBuffer = `in`.readByte().toInt() != 0
         this.reverseSlideshowDirection = `in`.readByte().toInt() != 0
+        this.autoStartSlideshow = `in`.readByte().toInt() != 0
     }
 
     val isGradiantOverlayVisible: Boolean
@@ -127,6 +131,7 @@ class MediaSliderConfiguration : Parcelable {
         dest.writeInt(panEffectPercent)
         dest.writeByte((if (useLargeVideoBuffer) 1 else 0).toByte())
         dest.writeByte((if (reverseSlideshowDirection) 1 else 0).toByte())
+        dest.writeByte((if (autoStartSlideshow) 1 else 0).toByte())
     }
 
     companion object {

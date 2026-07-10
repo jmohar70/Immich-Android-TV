@@ -78,6 +78,12 @@ abstract class GenericAssetFragment : VerticalCardGridFragment<Asset>() {
         return false
     }
 
+    // Overridden by TimelineFragment so clicking a month starts playing immediately,
+    // without requiring an extra manual Play press.
+    protected open fun autoStartSlideshow(): Boolean {
+        return false
+    }
+
     override fun openPopUpMenu() {
         findNavController().navigate(
             HomeFragmentDirections.actionGlobalToSettingsDialog("generic_asset_settings")
@@ -115,7 +121,8 @@ abstract class GenericAssetFragment : VerticalCardGridFragment<Asset>() {
                     zoomEffectPercent = PreferenceManager.get(SLIDER_ZOOM_EFFECT),
                     panEffectPercent = PreferenceManager.get(SLIDER_PAN_EFFECT),
                     useLargeVideoBuffer = PreferenceManager.get(SLIDER_FORCE_ORIGINAL_VIDEO),
-                    reverseSlideshowDirection = PreferenceManager.get(SLIDER_REVERSE_DIRECTION)
+                    reverseSlideshowDirection = PreferenceManager.get(SLIDER_REVERSE_DIRECTION),
+                    autoStartSlideshow = autoStartSlideshow()
                 )
             )
         )
