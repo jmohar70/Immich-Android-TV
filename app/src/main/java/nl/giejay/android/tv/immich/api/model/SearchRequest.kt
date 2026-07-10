@@ -10,5 +10,11 @@ data class SearchRequest(val page: Int = 0,
                          val takenBefore: String? = null,
                          val takenAfter: String? = null,
                          val city: String? = null,
-                         val withExif: Boolean = true
+                         val albumIds: List<String> = emptyList(),
+                         val withExif: Boolean = true,
+                         // Immich v3+ defaults to "any visibility" (incl. archived) when this
+                         // is omitted, instead of the pre-v3 default of "timeline" visibility -
+                         // set it explicitly to keep the same behavior as before on both old
+                         // and new server versions (https://immich.app/blog/v3-migration).
+                         val visibility: String = "timeline"
 )

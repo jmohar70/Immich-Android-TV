@@ -78,9 +78,21 @@ class ApiClient(private val config: ApiClientConfig) {
     suspend fun listAssetsFromAlbum(albumId: String): Either<String, AlbumDetails> {
         return executeAPICall(200) {
             val response = service.listAssetsFromAlbum(albumId)
-            val album = response.body()
-            val assets = album!!.assets.filter(excludeByTag()).map { it.copy(albumName = album.albumName) }
-            Response.success(album.copy(assets = assets))
+            val album = response.body()!!
+            // Immich v3+ no longer includes an embedded 'assets' list on the album response
+            // (see https://immich.app/blog/v3-migration) - fetch them separately via
+            // search/metadata with an albumIds filter instead. Using a large page size since
+            // callers of this function (excluded-albums filtering, screensaver-by-album) want
+            // the full set in one go, not paginated UI browsing (which already goes through
+            // the timeline/bucket-based AlbumDetailsFragment instead, unaffected by this).
+            val searchRequest = SearchRequest(page = 1, size = 1000, albumIds = listOf(albumId))
+            val assetsResponse = service.listAssets(searchRequest)
+            if (assetsResponse.isSuccessful) {
+                val assets = assetsResponse.body()!!.assets.items.filter(excludeByTag()).map { it.copy(albumName = album.albumName) }
+                Response.success(album.copy(assets = assets))
+            } else {
+                Response.error<AlbumDetails>(assetsResponse.code(), assetsResponse.errorBody()!!)
+            }
         }
     }
 
