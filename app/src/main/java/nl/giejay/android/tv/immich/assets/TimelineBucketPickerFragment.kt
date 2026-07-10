@@ -108,7 +108,7 @@ class TimelineBucketPickerFragment : RowsSupportFragment(), BrowseSupportFragmen
                 val header = HeaderItem(year)
                 val listRowAdapter = ArrayObjectAdapter(cardPresenter)
 
-                val cards = yearBuckets.map { bucket ->
+                val cards = yearBuckets.sortedBy { it.timeBucket }.map { bucket ->
                     Card(
                         id = bucket.timeBucket,
                         title = formatMonthOnly(bucket.timeBucket),
