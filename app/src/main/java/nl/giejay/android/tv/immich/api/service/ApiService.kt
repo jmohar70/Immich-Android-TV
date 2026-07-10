@@ -3,6 +3,7 @@ package nl.giejay.android.tv.immich.api.service
 import nl.giejay.android.tv.immich.api.model.Album
 import nl.giejay.android.tv.immich.api.model.AlbumDetails
 import nl.giejay.android.tv.immich.api.model.Asset
+import nl.giejay.android.tv.immich.api.model.AssetStatistics
 import nl.giejay.android.tv.immich.api.model.Bucket
 import nl.giejay.android.tv.immich.api.model.BucketResponse
 import nl.giejay.android.tv.immich.api.model.PeopleResponse
@@ -31,6 +32,9 @@ interface ApiService {
 
     @GET("search/cities")
     suspend fun searchCities(): Response<List<Asset>>
+
+    @POST("search/statistics")
+    suspend fun searchAssetStatistics(@Body searchRequest: SearchRequest): Response<AssetStatistics>
 
     @GET("albums/{albumId}")
     suspend fun listAssetsFromAlbum(@Path("albumId") albumId: String): Response<AlbumDetails>

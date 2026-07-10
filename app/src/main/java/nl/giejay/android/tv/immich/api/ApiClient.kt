@@ -8,6 +8,7 @@ import arrow.core.getOrElse
 import nl.giejay.android.tv.immich.api.model.Album
 import nl.giejay.android.tv.immich.api.model.AlbumDetails
 import nl.giejay.android.tv.immich.api.model.Asset
+import nl.giejay.android.tv.immich.api.model.AssetStatistics
 import nl.giejay.android.tv.immich.api.model.Bucket
 import nl.giejay.android.tv.immich.api.model.Folder
 import nl.giejay.android.tv.immich.api.model.Person
@@ -73,6 +74,12 @@ class ApiClient(private val config: ApiClientConfig) {
         return executeAPICall(200) { service.searchCities() }.map { assets ->
             assets.filter { !it.exifInfo?.city.isNullOrBlank() }
         }
+    }
+
+    suspend fun getAssetStatistics(): Either<String, AssetStatistics> {
+        // Empty filter body (no personIds/albumIds/type etc.) -> stats across all of the
+        // current user's own accessible assets, matching what the web UI's account page shows.
+        return executeAPICall(200) { service.searchAssetStatistics(SearchRequest()) }
     }
 
     suspend fun listAssetsFromAlbum(albumId: String): Either<String, AlbumDetails> {

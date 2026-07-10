@@ -69,6 +69,10 @@
     <string name="recent">Zuletzt</string>
     <string name="albums">Alben</string>
     <string name="server">Server</string>
+    <string name="statistics">Statistiken</string>
+    <string name="statistics_dialog_title">Bibliothek-Statistiken</string>
+    <string name="statistics_dialog_message">Fotos: %1$d\nVideos: %2$d\nGesamt: %3$d</string>
+    <string name="statistics_dialog_error">Statistiken konnten nicht geladen werden: %1$s</string>
     <string name="screensaver">Bildschirmschoner</string>
     <string name="debug">Debug</string>
     <string name="donate">Spenden</string>
