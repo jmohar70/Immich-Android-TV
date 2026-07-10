@@ -23,6 +23,7 @@ import com.bumptech.glide.request.transition.Transition
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import nl.giejay.android.tv.immich.ImmichApplication
@@ -256,6 +257,8 @@ abstract class VerticalCardGridFragment<ITEM> : GridFragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        ioScope.coroutineContext.cancelChildren()
+        mainScope.coroutineContext.cancelChildren()
         if (mBackgroundManager?.isAttached == true) {
             mBackgroundManager?.drawable = null
         }

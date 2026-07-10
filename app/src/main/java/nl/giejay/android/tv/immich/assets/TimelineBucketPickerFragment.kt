@@ -13,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import nl.giejay.android.tv.immich.R
 import nl.giejay.android.tv.immich.api.ApiClient
@@ -69,6 +70,11 @@ class TimelineBucketPickerFragment : RowsSupportFragment(), BrowseSupportFragmen
                 bundleOf("timeBucket" to bucketId)
             )
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        ioScope.coroutineContext.cancelChildren()
     }
 
     private fun setupClient() {
