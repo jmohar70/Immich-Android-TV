@@ -137,7 +137,10 @@ class ApiClient(private val config: ApiClientConfig) {
             personIds,
             endDate?.format(dateTimeFormatter),
             fromDate?.format(dateTimeFormatter),
-            city)
+            city,
+            // albumIds intentionally omitted here (defaults to null) - not used by this
+            // function, only by listAssetsFromAlbum()
+            visibility = if (random) null else "timeline")
         return (if (random) {
             executeAPICall(200) { service.randomAssets(searchRequest) }
         } else {
